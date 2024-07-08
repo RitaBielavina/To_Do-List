@@ -2,19 +2,24 @@ import tkinter
 from tkinter import ttk
 from tkinter import messagebox
 
+
+font1 = ("Helvetica", 20, "bold")
+font2 =("Helvetica", 16, "bold")
+
 def add_task():
     task: str=task_entry.get()
     if task == "":
         messagebox.showwarning('Error: Empty Task: 😵 ', "You cannot add an empty task! ❌")
     else:
         listbox.insert(tkinter.END, task)
+        task_entry.delete(0, tkinter.END)
+        save_task()
         messagebox.showinfo("Info", "New task added to the list.✨")
-
 
 def completed_task():
     try:
         task_index = listbox.curselection()[0]
-        listbox.itemconfigure(task_index, {'fg': '#E2BBE9'})
+        listbox.itemconfig(task_index, {'fg': '#E2BBE9'})
     except IndexError:
         messagebox.showwarning("Warning", "Please select a task to mark as completed.")
 
@@ -22,45 +27,69 @@ def delete_task():
     try:
         task_index = listbox.curselection()[0]
         listbox.delete(task_index)
+        save_task()
     except IndexError:
         messagebox.showwarning("Warning", "Please select a task to delete.")
+
+# Save tasks to the file when added or deleted
+def save_task():
+    tasks = listbox.get(0, tkinter.END)
+    with open("to_do_tasks.txt", "w") as file:
+        for task in tasks:
+            file.write(task + "\n")
+
+# Load tasks from file when the application starts
+def load_tasks():
+    try:
+        with open("to_do_tasks.txt", "r") as file:
+            tasks = file.readlines()
+            for task in tasks:
+                listbox.insert(tkinter.END, task.strip())
+    except FileNotFoundError:
+        pass
 
 #main
 
 window = tkinter.Tk()
 window.configure(bg="#F7E7DC")
 window.title('To-Do List🖋️:')
+window.minsize(500, 600)
 
 #Frame of the table
-frame = tkinter.Frame(window)
-frame.pack(padx=20, pady=20)
+frame = tkinter.Frame(window,bg="#F7E7DC")
+frame.pack(padx=20, pady=20,fill='both', expand=True)
 
 #Creating input frame
-task_frame = tkinter.LabelFrame(frame, text='What are you up to today 📌:',font=("Helvetica", 20, "bold"))
-task_frame.grid(row=0, column=0)
+task_frame = tkinter.LabelFrame(frame, text='What are you up to today 📌: ', font=font1, bg="#F7E7DC", fg="#405D72")
+task_frame.pack(fill='x', pady=10)
 
-tkinter.Label(task_frame, text='Enter your task ✏️ : ',font=("Helvetica", 20, "bold"),width=30).grid(row=0, column=0)
-task_entry = tkinter.Entry(task_frame,bg="#758694",width=42,font=("Helvetica", 16, "italic"),fg="#FFF8F3")
-task_entry.grid(row=1, column=0,padx=15, pady=15)
+tkinter.Label(task_frame, text='Enter your task ✏️ : ', font=font1, width=30, bg="#F7E7DC", fg="#405D72").grid(row=0, column=0)
+task_entry = tkinter.Entry(task_frame, bg="#758694", font=font2, fg="#FFF8F3")
+task_entry.grid(row=1, column=0, pady=10)
 
-add_btn = tkinter.Button(task_frame, text='Add',font=("Helvetica", 16, "bold"), command=add_task)
-add_btn.config(fg="#405D72")
-add_btn.grid(row=2, column=1,padx=5,pady=5 )
+add_btn = tkinter.Button(task_frame, text='Add', font=font2, fg="#90D26D", command=add_task,)
+add_btn.grid(row=2, column=1, padx=5, pady=5 )
+
 
 # Creating Frame with saved Tasks
+list_task_frame = tkinter.LabelFrame(
+    frame, text='Tasks :',font=font1, bg="#F7E7DC", fg="#405D72")
+list_task_frame.pack(fill='both', expand=True, pady=10)
 
-list_task_frame = tkinter.LabelFrame(frame, text='Tasks :',font=("Helvetica", 20, "bold"))
-list_task_frame.grid(row=3, column=0 )
+listbox = tkinter.Listbox(list_task_frame, height=15, width=35, bg="#758694", activestyle='dotbox', font=font2, fg="#FFF8F3")
+listbox.pack(padx=10, pady=10)
 
-listbox = tkinter.Listbox(list_task_frame, height=20, width=42, bg="#758694", activestyle='dotbox', font=("Helvetica",16), fg="#FFF8F3")
-listbox.grid(row=4, column=0, padx=20, pady=20)
+button_frame = tkinter.Frame(list_task_frame, bg="#F7E7DC")
+button_frame.pack(pady=10)
 
-complete_button = tkinter.Button(list_task_frame, text="Complete Task",font=("Helvetica", 16),command=completed_task)
-complete_button.config(fg="#405D72")
-complete_button.grid(row=5,column=0,padx=5, pady=5)
+complete_button = tkinter.Button(
+    list_task_frame, text="Complete Task",font=font2, fg="#FC4100", command=completed_task )
+complete_button.pack(side='left', padx=10, pady=5)
 
-delete_button = tkinter.Button(list_task_frame, text="Delete Task",font=("Helvetica", 16, "bold"),command=delete_task)
-delete_button.config(fg="#405D72")
-delete_button.grid(row=5,column=1,padx=5, pady=5)
+delete_button = (tkinter.Button(
+    list_task_frame, text="Delete Task",font=font2, fg="#C40C0C", command=delete_task)
+                 )
+delete_button.pack(side='right', padx=10, pady=5)
 
+load_tasks()
 window.mainloop()
