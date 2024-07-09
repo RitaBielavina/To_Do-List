@@ -2,97 +2,91 @@ import tkinter
 from tkinter import ttk
 from tkinter import messagebox
 
-
 font1 = ("Helvetica", 20, "bold")
-font2 =("Helvetica", 16, "bold")
+font2 = ("Helvetica", 16, "bold")
 
 def add_task():
-    task: str=task_entry.get()
+    task = task_entry.get()  # Retrieve the text from the task entry widget
     if task == "":
-        messagebox.showwarning('Error: Empty Task: 😵 ', "You cannot add an empty task! ❌")
+        messagebox.showwarning('Error: Empty Task 😵', "You cannot add an empty task! ❌")  # Show warning if empty
     else:
-        listbox.insert(tkinter.END, task)
-        task_entry.delete(0, tkinter.END)
-        save_task()
-        messagebox.showinfo("Info", "New task added to the list.✨")
-
+        listbox.insert(tkinter.END, task)  # Add task to the end of the list
+        task_entry.delete(0, tkinter.END)  # Clear the entry line
+        save_task()  # Save the new list of tasks to the file
+        messagebox.showinfo("Info", "New task added to the list.✨")  # Show info that new task is added
 
 def completed_task():
     try:
-        task_index = listbox.curselection()[0]
-        task_text = listbox.get(task_index)
+        task_index = listbox.curselection()[0]  # Get the index of the selected task
+        task_text = listbox.get(task_index)  # Get the text of the selected task
 
-        if task_text.startswith("✔️"):
+        if task_text.startswith("✔️"):  # Check if the task starts with a check mark
             new_text = task_text[2:]  # Remove the check mark
         else:
-            new_text = "✔️" + task_text  # Add the check Mark
+            new_text = "✔️" + task_text  # Add the check mark before the task
 
-        listbox.delete(task_index)
-        listbox.insert(task_index, new_text)
+        listbox.delete(task_index)  # Remove the task
+        listbox.insert(task_index, new_text)  # Reinsert task back to the list
 
         # Ensure the color is updated correctly after re-inserting
-        if new_text.startswith("✔️"):
+        if new_text.startswith("✔️"):  # If there is a check mark, change font color
             listbox.itemconfig(task_index, {'fg': '#E2BBE9'})
         else:
-            listbox.itemconfig(task_index, {'fg': '#FFF8F3'})
-        # Call save_task to save the updated task list
-        save_task()
+            listbox.itemconfig(task_index, {'fg': '#FFF8F3'})  # If task is not completed, reset color to original
+
+        save_task()  # Save the updated task list
 
     except IndexError:
-        messagebox.showwarning("Warning", "Please select a task to mark as completed.")
-
+        messagebox.showwarning("Warning", "Please select a task to mark as completed.")  # Show message if task is not selected
 
 def delete_task():
     try:
-        task_index = listbox.curselection()[0]
-        listbox.delete(task_index)
-        save_task()
+        task_index = listbox.curselection()[0]  # Get the index of the selected item
+        listbox.delete(task_index)  # Delete selected task from the list
+        save_task()  # Save changes to the file
     except IndexError:
-        messagebox.showwarning("Warning", "Please select a task to delete.")
+        messagebox.showwarning("Warning", "Please select a task to delete.")  # Show warning message if task is not selected
 
 # Save tasks to the file when added or deleted
 def save_task():
-    tasks = listbox.get(0, tkinter.END)
-    with open("to_do_tasks.txt", "w") as file:
+    tasks = listbox.get(0, tkinter.END)  # Get all tasks from the listbox
+    with open("to_do_tasks.txt", "w") as file:  # Open file for storing and writing information
         for task in tasks:
-            file.write(task + "\n")
+            file.write(task + "\n")  # Write each task to the file
 
 # Load tasks from file when the application starts
 def load_tasks():
     try:
-        with open("to_do_tasks.txt", "r") as file:
-            tasks = file.readlines()
+        with open("to_do_tasks.txt", "r") as file:  # Open file for reading
+            tasks = file.readlines()  # Read all lines from the file
             for task in tasks:
-                listbox.insert(tkinter.END, task.strip())
+                listbox.insert(tkinter.END, task.strip())  # Add each task to the listbox, stripping newline characters
     except FileNotFoundError:
-        pass
+        pass  # If the file does not exist, do nothing
 
-#main
-
+# Main window
 window = tkinter.Tk()
 window.configure(bg="#F7E7DC")
 window.title('To-Do List🖋️:')
 window.minsize(500, 600)
 
-#Frame of the table
-frame = tkinter.Frame(window,bg="#F7E7DC")
-frame.pack(padx=20, pady=20,fill='both', expand=True)
+# Frame of the table
+frame = tkinter.Frame(window, bg="#F7E7DC")
+frame.pack(padx=20, pady=20, fill='both', expand=True)
 
-#Creating input frame
-task_frame = tkinter.LabelFrame(frame, text='What are you up to today 📌: ', font=font1, bg="#F7E7DC", fg="#405D72")
-task_frame.pack(fill='x', pady=10)
+# Creating input frame
+task_frame = tkinter.LabelFrame(frame, text='What are you up to today 📌:', font=font1, bg="#F7E7DC", fg="#405D72")
+task_frame.pack(fill='x', pady=10)  # Fill x expands frame horizontally
 
-tkinter.Label(task_frame, text='Enter your task ✏️ : ', font=font1, width=30, bg="#F7E7DC", fg="#405D72").grid(row=0, column=0)
+tkinter.Label(task_frame, text='Enter your task ✏️:', font=font1, width=30, bg="#F7E7DC", fg="#405D72").grid(row=0, column=0)
 task_entry = tkinter.Entry(task_frame, bg="#758694", font=font2, fg="#FFF8F3")
 task_entry.grid(row=1, column=0, pady=10)
 
-add_btn = tkinter.Button(task_frame, text='Add', font=font2, fg="#90D26D", command=add_task,)
-add_btn.grid(row=2, column=1, padx=5, pady=5 )
+add_btn = tkinter.Button(task_frame, text='Add', font=font2, fg="#90D26D", command=add_task)
+add_btn.grid(row=2, column=1, padx=5, pady=5)
 
-
-# Creating Frame with saved Tasks
-list_task_frame = tkinter.LabelFrame(
-    frame, text='Tasks :',font=font1, bg="#F7E7DC", fg="#405D72")
+# Creating frame with saved tasks
+list_task_frame = tkinter.LabelFrame(frame, text='Tasks:', font=font1, bg="#F7E7DC", fg="#405D72")
 list_task_frame.pack(fill='both', expand=True, pady=10)
 
 listbox = tkinter.Listbox(list_task_frame, height=15, width=35, bg="#758694", activestyle='dotbox', font=font2, fg="#FFF8F3")
@@ -101,14 +95,12 @@ listbox.pack(padx=10, pady=10)
 button_frame = tkinter.Frame(list_task_frame, bg="#F7E7DC")
 button_frame.pack(pady=10)
 
-complete_button = tkinter.Button(
-    list_task_frame, text="Complete Task",font=font2, fg="#FC4100", command=completed_task )
+complete_button = tkinter.Button(list_task_frame, text="Complete Task", font=font2, fg="#FC4100", command=completed_task)
 complete_button.pack(side='left', padx=10, pady=5)
 
-delete_button = (tkinter.Button(
-    list_task_frame, text="Delete Task",font=font2, fg="#C40C0C", command=delete_task)
-                 )
+delete_button = tkinter.Button(list_task_frame, text="Delete Task", font=font2, fg="#C40C0C", command=delete_task)
 delete_button.pack(side='right', padx=10, pady=5)
 
+# Load tasks from the file when program opens
 load_tasks()
 window.mainloop()
