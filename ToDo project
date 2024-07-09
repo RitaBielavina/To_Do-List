@@ -80,26 +80,26 @@ task_frame.pack(fill='x', pady=10)  # Fill x expands frame horizontally
 
 tkinter.Label(task_frame, text='Enter your task ✏️:', font=font1, width=30, bg="#F7E7DC", fg="#405D72").grid(row=0, column=0)
 task_entry = tkinter.Entry(task_frame, bg="#758694", font=font2, fg="#FFF8F3")
-task_entry.grid(row=1, column=0, pady=10)
+task_entry.grid(row=1, column=0, pady=10, sticky='ew')
 
 add_btn = tkinter.Button(task_frame, text='Add', font=font2, fg="#90D26D", command=add_task)
-add_btn.grid(row=2, column=1, padx=5, pady=5)
+add_btn.grid(row=1, column=1, padx=5, pady=5, sticky='ew')
 
 # Creating frame with saved tasks
 list_task_frame = tkinter.LabelFrame(frame, text='Tasks:', font=font1, bg="#F7E7DC", fg="#405D72")
 list_task_frame.pack(fill='both', expand=True, pady=10)
 
 listbox = tkinter.Listbox(list_task_frame, height=15, width=35, bg="#758694", activestyle='dotbox', font=font2, fg="#FFF8F3")
-listbox.pack(padx=10, pady=10)
+listbox.pack(padx=10, pady=10, fill='both', expand=True)
 
 button_frame = tkinter.Frame(list_task_frame, bg="#F7E7DC")
-button_frame.pack(pady=10)
+button_frame.pack(fill='x', pady=10)
 
 complete_button = tkinter.Button(list_task_frame, text="Complete Task", font=font2, fg="#FC4100", command=completed_task)
-complete_button.pack(side='left', padx=10, pady=5)
+complete_button.pack(side='left', padx=10, pady=5, fill='x', expand=True)
 
 delete_button = tkinter.Button(list_task_frame, text="Delete Task", font=font2, fg="#C40C0C", command=delete_task)
-delete_button.pack(side='right', padx=10, pady=5)
+delete_button.pack(side='right', padx=10, pady=5, fill='x', expand=True)
 
 # Load tasks from the file when program opens
 load_tasks()
