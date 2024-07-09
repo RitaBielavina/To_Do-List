@@ -16,12 +16,31 @@ def add_task():
         save_task()
         messagebox.showinfo("Info", "New task added to the list.✨")
 
+
 def completed_task():
     try:
         task_index = listbox.curselection()[0]
-        listbox.itemconfig(task_index, {'fg': '#E2BBE9'})
+        task_text = listbox.get(task_index)
+
+        if task_text.startswith("✔️"):
+            new_text = task_text[2:]  # Remove the check mark
+        else:
+            new_text = "✔️" + task_text  # Add the check Mark
+
+        listbox.delete(task_index)
+        listbox.insert(task_index, new_text)
+
+        # Ensure the color is updated correctly after re-inserting
+        if new_text.startswith("✔️"):
+            listbox.itemconfig(task_index, {'fg': '#E2BBE9'})
+        else:
+            listbox.itemconfig(task_index, {'fg': '#FFF8F3'})
+        # Call save_task to save the updated task list
+        save_task()
+
     except IndexError:
         messagebox.showwarning("Warning", "Please select a task to mark as completed.")
+
 
 def delete_task():
     try:
